@@ -45,5 +45,79 @@
   const app = express();
   
   app.use(bodyParser.json());
+
+  let todos = [];
+
+  app.get("/todos", function(req,res){
+    res.json(todos);
+  });
+
+  app.get("/todos/:id", function (req, res) {
+  // Search the todo in the array by find() function with given id.
+  const todo = todos.find((reqTodo) => reqTodo.id === parseInt(req.params.id));
+  // If todo doesent' exists, return 404 error.
+  if (!todo) {
+    // Give response with 404 status code stating the error.
+    res.status(404).json({
+      message: "Todo doesen't exists!",
+    });
+  }
+  // If todo exists, return it as response.
+  res.json(todo);
+});
+
+ app.post("/todos", function (req, res) {
+  // Create a new todo object with unique random id.
+  const newTodo = {
+    id: Math.floor(Math.random() * 1000000),
+    title: req.body.title,
+    description: req.body.description,
+  };
+  // Add the new todo to the todos array.
+  todos.push(newTodo);
+  // If successful, send response with status code 201 aling with the new todo created.
+  res.status(201).json(newTodo);
+});
+
+  app.put("/todos/:id", (req, res) => {
+  // Find the index of the todo in the array by findIndex() function with given id.
+  const todoIndex = todos.findIndex(
+    (reqTodo) => reqTodo.id === parseInt(req.params.id)
+  );
+  // If todo doesen't exists.
+  if (todoIndex === -1) {
+    // Give response with 404 status code stating the error.
+    res.status(404).json({
+      message: "Todo doesen't exists!",
+    });
+  } else {
+    // If the todo exists, update its title/description and send as response to update.
+    todos[todoIndex].title = req.body.title;
+    todos[todoIndex].description = req.body.description;
+    res.json(todos[todoIndex]);
+  }
+})
+
+  app.delete("/todos/:id", (req, res) => {
+  // Find the index of the todo in the array by findIndex() function with given id.
+  const todoIndex = todos.findIndex(
+    (reqTodo) => reqTodo.id === parseInt(req.params.id)
+  );
+  // If todo doesen't exists.
+  if (todoIndex === -1) {
+    // Give response with 404 status code stating the error.
+    res.status(404).json({
+      message: "Todo doesen't exists!",
+    });
+  } else {
+    // If the todo exists, remove it from the array using splice() function and send as response to update.
+    todos.splice(todoIndex, 1);
+    res.status(200).send();
+  }
+});
+
+  app.use((req, res, next) => {
+    res.status(404).send("Route not found!");
+});
   
   module.exports = app;
