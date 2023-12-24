@@ -10,6 +10,12 @@ let requestCount = 0;
 // maintain a count of the number of requests made to the server in the global
 // requestCount variable
 
+//One of the very usual way to create a global middleware is through app.use
+app.use((req,res,next) => {
+  requestCount ++;
+  next();
+});
+
 app.get('/user', function(req, res) {
   res.status(200).json({ name: 'john' });
 });
